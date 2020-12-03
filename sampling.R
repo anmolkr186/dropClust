@@ -56,12 +56,11 @@ Sampling<-function(object,
       data = Log2Normalize(normcounts(object)[SingleCellExperiment::rowData(object)$HVG, sample_ids],return.sparse = FALSE)
     else
       data = as.matrix(normcounts(object)[, sample_ids])
-    # data = as.matrix(assay(object,i = "logcounts")[SingleCellExperiment::rowData(object)$HVG,idx])
     
     partition<-.annPartition(data)
     
     if(optm_parameters==TRUE){
-      param = .optimized_param(part0ition, nsamples)
+      param = .optimized_param(partition, nsamples)
       pinit = param[1]
       pfin = param[2]
       K = param[3]
@@ -70,15 +69,12 @@ Sampling<-function(object,
     
     oldseed = .Random.seed
     cluster_freq = table(partition[,2])
-    prop = round((pinit -
-                    exp(-cluster_freq/K) * (pinit - pfin) )* cluster_freq)
+    prop = round((pinit - exp(-cluster_freq/K) * (pinit - pfin) )* cluster_freq)
     t(rbind(cluster_freq,prop))
     prop = reshape2::melt(prop)$value
     subsamples<-c()
     for(k in 1:length(prop)){
-      subsamples = c(subsamples,
-                     sample(partition[which(partition[,2]==(k)),1],
-                            size = prop[k],replace = FALSE))
+      subsamples = c(subsamples, sample(partition[which(partition[,2]==(k)),1], size = prop[k],replace = FALSE))
     }
     .Random.seed = oldseed
     SummarizedExperiment::colData(object)$Sampling = rep(FALSE, ncol(object))
@@ -98,7 +94,6 @@ Sampling<-function(object,
   }
   
   object@metadata[["dropClust"]] = c(unlist(object@metadata[["dropClust"]]),"Sampling")
-  
   
   object
 }
@@ -163,6 +158,10 @@ Sampling<-function(object,
 #' ANN Graph Partition
 #' @param data numeric matrix with \code{n} samples in rows
 #' @return two column integer matrix, first column represents sample id, second column contain cluster membership id
+
+# FIXME: RcPP Annoy is used for finding approx neighbours
+# FIXME: data is here is sample ids of the normalised object from the original object
+
 .annPartition<-function(data){
   # set.seed(0)
   f = dim(data)[1]

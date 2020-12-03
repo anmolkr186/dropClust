@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import math
+import anndata2ri
+from rpy2.robjects import r
+from rpy2.robjects.conversion import localconverter
 
 # Sampling Primary Clusters
 # Desciption: Performs sampling from the primary clusters in an inverse exponential order of cluster size.
@@ -25,7 +28,6 @@ import math
 
 adata = sc.read_10x_mtx('hg19/', var_names='gene_symbols', cache=True)   
 print(adata.X)
-
 
 # objects needs to be an AnnData object 
 def sampling(object, nsamples=500, method = "sps", optm_parameters=FALSE, pinit=0.195, pfin = 0.9, K=500)):
@@ -92,6 +94,7 @@ def sampling(object, nsamples=500, method = "sps", optm_parameters=FALSE, pinit=
         .Random.seed = oldseed
         SummarizedExperiment::colData(object)$Sampling = rep(FALSE, ncol(object))
         SummarizedExperiment::colData(object)$Sampling[sample_ids[subsamples]] =  TRUE
+
         """
 
         print(len(subsamples), "Samples extracted.\n")
