@@ -127,5 +127,6 @@ def sampling(adata, axis = 0, nsamples=500, method = "sps", optm_parameters=True
 
     print(len(subsamples), "Samples extracted. Returning indices of samples")
 
+    # Returning indices of selected samples
     return subsamples
     
