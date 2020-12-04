@@ -509,7 +509,7 @@ class GenSARunner(object):
         return res
 
 def gensa(func, x0, bounds, maxiter=500, initial_temp=5230., visit=2.62,
-        accept=-5.0, maxfun=1e7, args=(), seed=None, pure_sa=False):
+        accept=-5.0, maxfun=1e7, args=(), seed=None, pure_sa=False, *therest):
     """
     Find the global minimum of a function using the Generalized Simulated
     Annealing algorithm
@@ -635,6 +635,6 @@ def gensa(func, x0, bounds, maxiter=500, initial_temp=5230., visit=2.62,
     """
     gr = GenSARunner(func, x0, bounds, args, seed,
             temperature_start=initial_temp, qv = visit, qa = accept,
-            maxfun=maxfun, maxsteps=maxiter,pure_sa=pure_sa)
+            maxfun=maxfun, maxsteps=maxiter,pure_sa=pure_sa, *therest)
     gr.start_search()
     return gr.result
